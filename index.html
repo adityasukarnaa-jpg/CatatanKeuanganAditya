@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Catatan Keuangan Aditya</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrap">
+
+    <header class="header">
+      <div>
+        <p class="eyebrow">Catatan Keuangan Pribadi</p>
+        <h1>Catatan Keuangan Aditya</h1>
+      </div>
+      <div class="stamp">
+        <span class="stamp-label">Saldo Bulan Ini</span>
+        <span class="stamp-value" id="stampSaldo">Rp0</span>
+      </div>
+    </header>
+
+    <div id="configNotice" class="banner banner-warn" hidden>
+      Belum terhubung ke Google Spreadsheet. Atur <code>APPS_SCRIPT_URL</code> di <code>app.js</code> — lihat README.md.
+    </div>
+    <div id="saveError" class="banner banner-error" hidden>
+      Catatan belum tersimpan. Periksa koneksi internet lalu coba lagi.
+    </div>
+
+    <p class="loading" id="loadingMsg">Membuka buku kas…</p>
+
+    <div id="appBody" hidden>
+      <nav class="tabs">
+        <button class="tab-btn active" data-tab="catat" type="button">Catat Hari Ini</button>
+        <button class="tab-btn" data-tab="rekap" type="button">Rekap Bulanan</button>
+      </nav>
+
+      <section id="tab-catat" class="tab-panel">
+        <form id="entryForm" class="entry-form">
+          <div class="type-toggle">
+            <button type="button" class="type-btn out active" data-type="out">Pengeluaran</button>
+            <button type="button" class="type-btn in" data-type="in">Pemasukan</button>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="field">
+              <label for="fDate">Tanggal</label>
+              <input type="date" id="fDate" required />
+            </div>
+            <div class="field">
+              <label for="fCategory">Kategori</label>
+              <select id="fCategory"></select>
+            </div>
+          </div>
+
+          <div class="grid grid-3">
+            <div class="field span-1">
+              <label for="fAmount">Jumlah (Rp)</label>
+              <input type="number" id="fAmount" placeholder="0" min="1" inputmode="numeric" required />
+            </div>
+            <div class="field span-2">
+              <label for="fNote">Keterangan (opsional)</label>
+              <input type="text" id="fNote" placeholder="mis. beli beras" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" id="submitBtn">+ Tambah Catatan</button>
+        </form>
+
+        <div class="section-title-row">
+          <h2>Catatan Hari Ini</h2>
+          <span id="todayLabel" class="muted-small"></span>
+        </div>
+        <div id="todayLedger" class="ledger"></div>
+      </section>
+
+      <section id="tab-rekap" class="tab-panel" hidden>
+        <select id="monthSelect" class="month-select"></select>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <span class="summary-label">Pemasukan</span>
+            <span class="summary-value col-in" id="sumIncome">Rp0</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-label">Pengeluaran</span>
+            <span class="summary-value col-out" id="sumOut">Rp0</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-label">Saldo</span>
+            <span class="summary-value" id="sumSaldo">Rp0</span>
+          </div>
+        </div>
+
+        <div id="chartWrap" class="card-block" hidden>
+          <h3>Pengeluaran per Hari</h3>
+          <div id="chart" class="chart"></div>
+        </div>
+
+        <div id="categoryWrap" class="card-block" hidden>
+          <h3>Rincian per Kategori</h3>
+          <div id="categoryBars" class="category-bars"></div>
+        </div>
+
+        <h3 class="ledger-title">Semua Catatan — <span id="monthLabelText"></span></h3>
+        <div id="monthLedger" class="ledger"></div>
+      </section>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
