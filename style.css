@@ -16,6 +16,7 @@
   --amber-soft: rgba(255, 178, 56, 0.15);
   --violet: #8C6BFF;
   --violet-soft: rgba(140, 107, 255, 0.18);
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -274,6 +275,11 @@ body::before {
 
 .field input[type="number"] { font-family: 'Share Tech Mono', monospace; }
 .field input[type="date"] { color-scheme: dark; }
+
+.field select option, .month-select option {
+  background-color: var(--bg-mid);
+  color: var(--ink);
+}
 
 .btn-primary {
   width: 100%;
