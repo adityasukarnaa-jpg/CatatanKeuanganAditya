@@ -51,8 +51,14 @@
               <input type="date" id="fDate" required />
             </div>
             <div class="field">
-              <label for="fCategory">Kategori</label>
-              <select id="fCategory"></select>
+              <label id="categoryLabel">Kategori</label>
+              <div class="dropdown" id="categoryDropdown">
+                <button type="button" class="dropdown-trigger" id="categoryTrigger" aria-haspopup="listbox" aria-expanded="false">
+                  <span id="categoryTriggerText">Makanan</span>
+                  <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div class="dropdown-menu" id="categoryMenu" role="listbox" hidden></div>
+              </div>
             </div>
           </div>
 
@@ -78,7 +84,13 @@
       </section>
 
       <section id="tab-rekap" class="tab-panel" hidden>
-        <select id="monthSelect" class="month-select"></select>
+        <div class="dropdown month-select" id="monthDropdown">
+          <button type="button" class="dropdown-trigger" id="monthTrigger" aria-haspopup="listbox" aria-expanded="false">
+            <span id="monthTriggerText"></span>
+            <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="dropdown-menu" id="monthMenu" role="listbox" hidden></div>
+        </div>
 
         <div class="summary-grid">
           <div class="summary-card">
