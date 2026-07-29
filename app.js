@@ -3,14 +3,16 @@
 // Tempel URL Web App hasil deploy Google Apps Script di sini.
 // Lihat README.md untuk cara mendapatkannya.
 // =====================================================================
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSI6ED7Cirxs29SKgqrr2ywt4wSrlN2Mn1z2rX6MRF1fRr2nh2fOvfS3kUxWEx0NGqbQ/exec";
+const APPS_SCRIPT_URL = "PASTE_URL_WEB_APP_APPS_SCRIPT_DI_SINI";
 
 const EXPENSE_CATEGORIES = ['Makanan', 'Transportasi', 'Belanja Rumah', 'Tagihan & Utilitas', 'Kesehatan', 'Pendidikan', 'Hiburan', 'Lainnya'];
 const INCOME_CATEGORIES = ['Gaji', 'Usaha', 'Lainnya'];
 
 let entries = [];
 let currentType = 'out';
+let selectedCategory = EXPENSE_CATEGORIES[0];
 let selectedMonth = todayStr().slice(0, 7);
+let openDropdown = null;
 
 // ---------- Helpers ----------
 function todayStr() {
@@ -67,8 +69,13 @@ async function apiDelete(id) {
 // ---------- Init ----------
 async function init() {
   document.getElementById('fDate').value = todayStr();
-  populateCategorySelect();
+  renderCategoryMenu();
+  setupDropdown('categoryTrigger', 'categoryMenu');
+  setupDropdown('monthTrigger', 'monthMenu');
   document.getElementById('todayLabel').textContent = dayLabelFull(todayStr());
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.dropdown') && openDropdown) closeDropdown(openDropdown);
+  });
 
   if (!isConfigured()) {
     document.getElementById('configNotice').hidden = false;
@@ -89,16 +96,54 @@ async function init() {
   renderAll();
 }
 
-function populateCategorySelect() {
-  const sel = document.getElementById('fCategory');
-  sel.innerHTML = '';
+// ---------- Generic dropdown open/close ----------
+function setupDropdown(triggerId, menuId) {
+  const trigger = document.getElementById(triggerId);
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = trigger.classList.contains('open');
+    if (openDropdown) closeDropdown(openDropdown);
+    if (!isOpen) openDropdownEl(triggerId, menuId);
+  });
+}
+
+function openDropdownEl(triggerId, menuId) {
+  document.getElementById(triggerId).classList.add('open');
+  document.getElementById(triggerId).setAttribute('aria-expanded', 'true');
+  document.getElementById(menuId).hidden = false;
+  openDropdown = { triggerId, menuId };
+}
+
+function closeDropdown(ref) {
+  document.getElementById(ref.triggerId).classList.remove('open');
+  document.getElementById(ref.triggerId).setAttribute('aria-expanded', 'false');
+  document.getElementById(ref.menuId).hidden = true;
+  openDropdown = null;
+}
+
+// ---------- Category dropdown ----------
+function renderCategoryMenu() {
+  const menu = document.getElementById('categoryMenu');
   const list = currentType === 'out' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+  if (!list.includes(selectedCategory)) selectedCategory = list[0];
+  menu.innerHTML = '';
   for (const c of list) {
-    const opt = document.createElement('option');
-    opt.value = c;
+    const opt = document.createElement('div');
+    opt.className = `dropdown-option${c === selectedCategory ? ' selected' : ''}`;
     opt.textContent = c;
-    sel.appendChild(opt);
+    opt.setAttribute('role', 'option');
+    opt.tabIndex = 0;
+    const choose = () => {
+      selectedCategory = c;
+      document.getElementById('categoryTriggerText').textContent = c;
+      renderCategoryMenu();
+      if (openDropdown) closeDropdown(openDropdown);
+    };
+    opt.addEventListener('click', choose);
+    opt.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); } });
+    menu.appendChild(opt);
   }
+  document.getElementById('categoryTriggerText').textContent = selectedCategory;
 }
 
 // ---------- Tabs ----------
@@ -119,7 +164,7 @@ document.querySelectorAll('.type-btn').forEach((btn) => {
     document.querySelectorAll('.type-btn').forEach((b) => b.classList.remove('active'));
     btn.classList.add('active');
     currentType = btn.dataset.type;
-    populateCategorySelect();
+    renderCategoryMenu();
   });
 });
 
@@ -133,7 +178,7 @@ document.getElementById('entryForm').addEventListener('submit', async (e) => {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     date: document.getElementById('fDate').value,
     type: currentType,
-    category: document.getElementById('fCategory').value,
+    category: selectedCategory,
     amount,
     note: document.getElementById('fNote').value.trim(),
   };
@@ -199,19 +244,26 @@ function populateMonthSelect() {
   const months = Array.from(set).sort().reverse();
   if (!months.includes(selectedMonth)) selectedMonth = months[0];
 
-  const sel = document.getElementById('monthSelect');
-  sel.innerHTML = '';
+  const menu = document.getElementById('monthMenu');
+  menu.innerHTML = '';
   for (const m of months) {
-    const opt = document.createElement('option');
-    opt.value = m;
+    const opt = document.createElement('div');
+    opt.className = `dropdown-option${m === selectedMonth ? ' selected' : ''}`;
     opt.textContent = monthLabel(m);
-    if (m === selectedMonth) opt.selected = true;
-    sel.appendChild(opt);
+    opt.setAttribute('role', 'option');
+    opt.tabIndex = 0;
+    const choose = () => {
+      selectedMonth = m;
+      document.getElementById('monthTriggerText').textContent = monthLabel(m);
+      populateMonthSelect();
+      renderRekap();
+      if (openDropdown) closeDropdown(openDropdown);
+    };
+    opt.addEventListener('click', choose);
+    opt.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); } });
+    menu.appendChild(opt);
   }
-  sel.onchange = () => {
-    selectedMonth = sel.value;
-    renderRekap();
-  };
+  document.getElementById('monthTriggerText').textContent = monthLabel(selectedMonth);
 }
 
 function renderRekap() {
