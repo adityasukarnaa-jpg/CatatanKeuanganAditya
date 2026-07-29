@@ -3,7 +3,7 @@
 // Tempel URL Web App hasil deploy Google Apps Script di sini.
 // Lihat README.md untuk cara mendapatkannya.
 // =====================================================================
-const APPS_SCRIPT_URL = "PASTE_URL_WEB_APP_APPS_SCRIPT_DI_SINI";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSI6ED7Cirxs29SKgqrr2ywt4wSrlN2Mn1z2rX6MRF1fRr2nh2fOvfS3kUxWEx0NGqbQ/exec";
 
 const EXPENSE_CATEGORIES = ['Makanan', 'Transportasi', 'Belanja Rumah', 'Tagihan & Utilitas', 'Kesehatan', 'Pendidikan', 'Hiburan', 'Lainnya'];
 const INCOME_CATEGORIES = ['Gaji', 'Usaha', 'Lainnya'];
